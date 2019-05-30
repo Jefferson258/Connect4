@@ -38,25 +38,12 @@ public class Board
         return board[row][col];
     }
 
-    public void makeMove1(int col)
+    public void makeMove(int col, int player)
     {
         for(int row = getSideLength() - 1; row >= 0; row--)
         {
-            if(board[row][col] == 0)
-            {
-                board[row][col] = 1;
-                break;
-            }
-        }
-    }
-
-    public void makeMove2(int col)
-    {
-        for(int row = getSideLength() - 1; row >= 0; row--)
-        {
-            if(board[row][col] == 0)
-            {
-                board[row][col] = 2;
+            if(board[row][col] == 0) {
+                board[row][col] = player;
                 break;
             }
         }

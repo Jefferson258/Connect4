@@ -1,246 +1,110 @@
 import java.util.Scanner;
 
-public class Game
-{
+public class Game {
     Scanner scan = new Scanner(System.in);
-    private int n;
+    private int n, numPlayers, connections;
     private boolean move = false;
     private Board b;
-    public Game(int side)
-    {
+
+    public Game(int side, int players, int connect) {
         Board board = new Board(side);
         b = board;
+        numPlayers = players;
+        connections = connect;
     }
 
-    public void play()
-    {
+    public void play() {
         System.out.println("Welcome to Connect 4!");
         System.out.println("In order to play, choose the column that you would like to drop your token into (1 to " + b.getSideLength() + ").");
-        System.out.println("There are 2 players, in order to win, you must get four of your mark in a row horizontally, vertically, or diagonally.");
+        System.out.println("There are " + numPlayers + " players, in order to win, you must get " + connections + " of your mark in a row horizontally, vertically, or diagonally.");
         //enters main game loop
-        while(!isFull())
-        {
-            b.print();
-            System.out.println();
-            System.out.println("Player 1, choose a column.");
-            n = scan.nextInt();
-            while(!move)
-            {
-                if(n > 0 && n <= b.getSideLength() && b.canMakeMove(n - 1))
-                {
-                        b.makeMove1(n - 1);
-                        move = true;
-                }
-                else
-                {
-                    System.out.println("Player 1, choose an unfilled column between 1 and " + b.getSideLength() + ".");
-                    n = scan.nextInt();
-                }
-            }
-            move = false;
-            if(fourInARow1())
-            {
-                System.out.println("Player 1 Wins!");
+        while (!isFull()) {
+            for (int i = 1; i <= numPlayers; i++) {
                 b.print();
-                break;
-            }
-            b.print();
-            System.out.println();
-            System.out.println("Player 2, choose a column.");
-            n = scan.nextInt();
-            while(!move)
-            {
-                if(n > 0 && n <= b.getSideLength() && b.canMakeMove(n - 1))
-                {
-                    {
-                        b.makeMove2(n - 1);
+                System.out.println();
+                System.out.println("Player " + i + ", choose a column.");
+                n = scan.nextInt();
+                while (!move) {
+                    if (n > 0 && n <= b.getSideLength() && b.canMakeMove(n - 1)) {
+                        b.makeMove(n - 1, i);
                         move = true;
+                    } else {
+                        System.out.println("Player " + i + ", choose an unfilled column between 1 and " + b.getSideLength() + ".");
+                        n = scan.nextInt();
                     }
                 }
-                else
-                {
-                    System.out.println("Player 2, choose an unfilled column between 1 and " + b.getSideLength() + ".");
-                    n = scan.nextInt();
+                move = false;
+                if (connectInARow(i)) {
+                    System.out.println("Player " + i + " Wins!");
+                    System.out.println();
+                    b.print();
+                    System.exit(0);
                 }
             }
-            move = false;
-            if(fourInARow2())
-            {
-                System.out.println("Player 2 Wins!");
-                b.print();
-                break;
-            }
-            System.out.println();
-        }
-        if(!fourInARow1() && !fourInARow2())
-        {
-            System.out.println("It is a tie!");
-            System.out.println();
-            b.print();
         }
     }
 
-    public boolean fourInARow1()
-    {
-        //checks horizontal player 1
-        for(int row = 0; row < b.getSideLength(); row++)
-        {
-            for(int col = 0; col < b.getSideLength(); col++)
-            {
-                if(b.getNum(row, col) == 1 && col <= b.getSideLength() - 4)
-                {
-                    if(b.getNum(row, col + 1) == 1)
-                    {
-                        if(b.getNum(row, col + 2) == 1)
-                        {
-                            if(b.getNum(row, col + 3) == 1)
-                                return true;
-                        }
-                    }
-                }
-            }
-        }
-        //checks vertical player 1
-        for(int col = 0; col < b.getSideLength(); col++)
-        {
-            for(int row = 0; row < b.getSideLength(); row++)
-            {
-                if(b.getNum(row, col) == 1 && row <= b.getSideLength() - 4)
-                {
-                    if(b.getNum(row + 1, col) == 1)
-                    {
-                        if(b.getNum(row + 2, col) == 1)
-                        {
-                            if(b.getNum(row + 3, col) == 1)
-                                return true;
-                        }
-                    }
-                }
-            }
-        }
-        //checks diagonal up-right
-        for(int col = 0; col < b.getSideLength(); col++)
-        {
-            for(int row = 0; row < b.getSideLength(); row++)
-            {
-                if(b.getNum(row, col) == 1 && row >= 3 && col <= b.getSideLength() - 4)
-                {
-                    if(b.getNum(row - 1, col + 1) == 1)
-                    {
-                        if(b.getNum(row - 2, col + 2) == 1)
-                        {
-                            if(b.getNum(row - 3, col + 3) == 1)
-                                return true;
-                        }
-                    }
-                }
-            }
-        }
-        //checks diagonal up-left
-        for(int col = 0; col < b.getSideLength(); col++)
-        {
-            for(int row = 0; row < b.getSideLength(); row++)
-            {
-                if(b.getNum(row, col) == 1 && row >= 3 && col >= 3)
-                {
-                    if(b.getNum(row - 1, col - 1) == 1)
-                    {
-                        if(b.getNum(row - 2, col - 2) == 1)
-                        {
-                            if(b.getNum(row - 3, col - 3) == 1)
-                                return true;
-                        }
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    public boolean fourInARow2()
-    {
+    public boolean connectInARow(int player) {
         //checks horizontal
-        for(int row = 0; row < b.getSideLength(); row++)
-        {
-            for(int col = 0; col < b.getSideLength(); col++)
-            {
-                if(b.getNum(row, col) == 2 && col <= b.getSideLength() - 4)
-                {
-                    if(b.getNum(row, col + 1) == 2)
-                    {
-                        if(b.getNum(row, col + 2) == 2)
-                        {
-                            if(b.getNum(row, col + 3) == 2)
-                                return true;
-                        }
-                    }
+        int hor = 0;
+        for (int row = 0; row < b.getSideLength(); row++) {
+            for (int col = 0; col <= b.getSideLength() - connections; col++) {
+                for (int i = 0; i < connections; i++) {
+                    if (b.getNum(row, col + i) == player)
+                        hor++;
                 }
+                if (hor == connections)
+                    return true;
+                hor = 0;
             }
         }
         //checks vertical
-        for(int col = 0; col < b.getSideLength(); col++)
-        {
-            for(int row = 0; row < b.getSideLength(); row++)
-            {
-                if(b.getNum(row, col) == 2 && row <= b.getSideLength() - 4)
-                {
-                    if(b.getNum(row + 1, col) == 2)
-                    {
-                        if(b.getNum(row + 2, col) == 2)
-                        {
-                            if(b.getNum(row + 3, col) == 2)
-                                return true;
-                        }
-                    }
+        int vert = 0;
+        for (int col = 0; col < b.getSideLength(); col++) {
+            for (int row = 0; row <= b.getSideLength() - connections; row++) {
+                for (int i = 0; i < connections; i++) {
+                    if (b.getNum(row + i, col) == player)
+                        vert++;
                 }
+                if (vert == connections)
+                    return true;
+                vert = 0;
             }
         }
         //checks diagonal up-right
-        for(int col = 0; col < b.getSideLength(); col++)
-        {
-            for(int row = 0; row < b.getSideLength(); row++)
-            {
-                if(b.getNum(row, col) == 2 && row >= 3 && col <= b.getSideLength() - 4)
-                {
-                    if(b.getNum(row - 1, col + 1) == 2)
-                    {
-                        if(b.getNum(row - 2, col + 2) == 2)
-                        {
-                            if(b.getNum(row - 3, col + 3) == 2)
-                                return true;
-                        }
-                    }
+        int diagonal1 = 0;
+        for (int col = 0; col <= b.getSideLength() - connections; col++) {
+            for (int row = connections - 1; row < b.getSideLength(); row++) {
+                for(int i = 0; i < connections; i++){
+                    if(b.getNum(row - i, col + i) == player)
+                        diagonal1++;
                 }
+                if(diagonal1 == connections)
+                    return true;
+                diagonal1 = 0;
             }
         }
         //checks diagonal up-left
-        for(int col = 0; col < b.getSideLength(); col++)
-        {
-            for(int row = 0; row < b.getSideLength(); row++)
-            {
-                if(b.getNum(row, col) == 2 && row >= 3 && col >= 3)
-                {
-                    if(b.getNum(row - 1, col - 1) == 2)
-                    {
-                        if(b.getNum(row - 2, col - 2) == 2)
-                        {
-                            if(b.getNum(row - 3, col - 3) == 2)
-                                return true;
-                        }
-                    }
+        int diagonal2 = 0;
+        for (int col = connections - 1; col < b.getSideLength(); col++) {
+            for (int row = connections - 1; row < b.getSideLength(); row++) {
+                for(int i = 0; i < connections; i++){
+                    if(b.getNum(row - i, col - i) == player)
+                        diagonal2++;
                 }
+                if(diagonal2 == connections)
+                    return true;
+                diagonal2 = 0;
             }
         }
+
         return false;
     }
 
-    public boolean isFull()
-    {
-        for(int row = 0; row < b.getSideLength(); row++)
-        {
-            for(int col = 0; col < b.getSideLength(); col++)
-            {
-                if(b.getNum(row, col) == 0)
+    public boolean isFull() {
+        for (int row = 0; row < b.getSideLength(); row++) {
+            for (int col = 0; col < b.getSideLength(); col++) {
+                if (b.getNum(row, col) == 0)
                     return false;
             }
         }
