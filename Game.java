@@ -26,13 +26,14 @@ public class Game
             n = scan.nextInt();
             while(!move)
             {
-                if(b.canMakeMove(n - 1)) {
-                    b.makeMove1(n - 1);
-                    move = true;
+                if(n > 0 && n <= b.getSideLength() && b.canMakeMove(n - 1))
+                {
+                        b.makeMove1(n - 1);
+                        move = true;
                 }
                 else
                 {
-                    System.out.println("Player 1, choose an unfilled column.");
+                    System.out.println("Player 1, choose an unfilled column between 1 and " + b.getSideLength() + ".");
                     n = scan.nextInt();
                 }
             }
@@ -49,13 +50,16 @@ public class Game
             n = scan.nextInt();
             while(!move)
             {
-                if(b.canMakeMove(n - 1)) {
-                    b.makeMove2(n - 1);
-                    move = true;
+                if(n > 0 && n <= b.getSideLength() && b.canMakeMove(n - 1))
+                {
+                    {
+                        b.makeMove2(n - 1);
+                        move = true;
+                    }
                 }
                 else
                 {
-                    System.out.println("Player 2, choose an unfilled column.");
+                    System.out.println("Player 2, choose an unfilled column between 1 and " + b.getSideLength() + ".");
                     n = scan.nextInt();
                 }
             }
@@ -68,7 +72,7 @@ public class Game
             }
             System.out.println();
         }
-        if(!fourInARow1() || !fourInARow2())
+        if(!fourInARow1() && !fourInARow2())
         {
             System.out.println("It is a tie!");
             System.out.println();

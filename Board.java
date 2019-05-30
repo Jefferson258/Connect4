@@ -38,12 +38,6 @@ public class Board
         return board[row][col];
     }
 
-    public void setNum(int row, int col, int n)
-    {
-        board[row][col] = n;
-    }
-
-
     public void makeMove1(int col)
     {
         for(int row = getSideLength() - 1; row >= 0; row--)
